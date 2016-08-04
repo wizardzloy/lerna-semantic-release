@@ -6,7 +6,7 @@ cache:
 notifications:
   email: false
 node_js:
-  - "5"
+  - "stable"
 before_script:
   - npm prune
   - git config --global user.email "jonelson+lerna-sr-travis-ci@atlassian.com"
