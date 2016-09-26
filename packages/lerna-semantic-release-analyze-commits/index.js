@@ -4,10 +4,9 @@ var affectsDelimiter = 'affects:';
 
 function findAffectsLine(commit) {
   var message = (commit && commit.message) ? commit.message : '';
-  var affectsLine = message.split('\n\n').filter(function (line) {
+  var affectsLine = message.split('\n').filter(function (line) {
     return line.indexOf(affectsDelimiter) === 0;
   })[0];
-  console.log(affectsLine);
   return affectsLine;
 }
 
