@@ -10,7 +10,7 @@
     "async": "~2.0.1",
     "npmconf": "~2.1.0",
     "rc": "~1.1.0",
-    "semantic-release": "semantic-release/semantic-release#a5cb9ea7f7a66657f95f0d913126e812adb6d9f8"
+    "semantic-release": "^6.3.1"
   },
   "devDependencies": {
     "mocha": "~3.0.2",
