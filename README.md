@@ -11,7 +11,7 @@ Status:
 Basically a semantic-release that orders commits based on which package they belong to (uses data from [cz-lerna-changelog](https://github.com/atlassian/cz-lerna-changelog)) and then determines on that what the next release should be.
 
 ## Setup
-
+### Setting up commitizen
 Install cz-lerna-changelog in your repository:
 
 ```
@@ -31,6 +31,20 @@ See the [commitizen-cli](https://github.com/commitizen/cz-cli) docs for more det
 You'll need to set up your build in such a way that tags and commits can be pushed back to the repository. This is so that lerna can stay in sync with the NPM releases.
 
 You'll also need to set the `NPM_TOKEN` environment variable so that npm can run `npm publish` on your components.
+
+#### Travis CI integration
+
+See `.travis.yml` and `.travis/` in this repository for examples of how to set up lerna-semantic-release with Travis CI.
+
+The following environment variables will need to be set:
+
+```
+NPM_CONFIG_EMAIL 
+NPM_CONFIG_USERNAME 
+NPM_TOKEN 
+GH_TOKEN 
+RELEASE_GH_TOKEN
+```
 
 ## Releasing
 
