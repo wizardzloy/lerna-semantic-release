@@ -74,3 +74,27 @@ describe('analyzing commits', function() {
     });
   });
 });
+
+describe('findAffectsLine: ', function () {
+  it('finds the right line with one package', function () {
+    var commit = {message: "feat(component): add package\n\naffects: abc\n"};
+    expect(analyzeCommits.findAffectsLine(commit)).to.equal('affects: abc');
+  });
+
+  it('finds the right line with two packages', function () {
+    var commit = {message: "feat(component): add packages\n\naffects: a, b\n"};
+    expect(analyzeCommits.findAffectsLine(commit)).to.equal('affects: a, b');
+  });
+  it('finds the right line with a breaking change', function () {
+    var commit = {message: "feat(component): add packages\n\nBREAKING CHANGE: something\n\naffects: a\n"};
+    expect(analyzeCommits.findAffectsLine(commit)).to.equal('affects: a');
+  });
+  it('finds the right line with a breaking change and an extra message', function () {
+    var commit = {message: "feat(component): add packages\n\nalso extra message\n\nBREAKING CHANGE: something\n\naffects: a\n"};
+    expect(analyzeCommits.findAffectsLine(commit)).to.equal('affects: a');
+  });
+  it('finds no line when there is none', function () {
+    var commit = {message: "chore(component): add packages\n"};
+    expect(analyzeCommits.findAffectsLine(commit)).to.equal(undefined);
+  });
+});
