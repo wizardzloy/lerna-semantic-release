@@ -1,10 +1,5 @@
 if (window && window.console) {
-  module.exports = {
-    error: window.console.error,
-    warn: window.console.warn,
-    log: window.console.log,
-    info: window.console.log,
-  };
+  module.exports = window.console;
 } else {
   var winston = require('winston');
   winston.cli();
