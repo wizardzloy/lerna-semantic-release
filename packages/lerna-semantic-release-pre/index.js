@@ -74,7 +74,10 @@ function bumpVersionCommitAndTag (nextRelease, done) {
 
   io.shell.pushdSync(packagePath);
 
-  var releaseCommitMessage = 'chore(release): releasing component\n\naffects: ' + lernaTag + '\n\nReleased from sha ' + releaseHash;
+  var releaseCommitMessage =  'chore(release): releasing component\n\n' +
+                              'affects: ' + lernaTag + '\n\n' +
+                              'Released from sha ' + releaseHash + '\n\n' +
+                              '[skip ci]'; // skip CI run for these commits in Bitbucket Pipelines
 
   async.series([
     io.npm.version(releaseTypeToNpmVersionType(nextRelease.type)),
