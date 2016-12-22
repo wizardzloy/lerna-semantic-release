@@ -3,7 +3,7 @@ var PackageUtilities = require('lerna/lib/PackageUtilities');
 
 module.exports = {
   getAllPackages: function () {
-    var packagesLocation = new Repository().packagesLocation;
-    return PackageUtilities.getPackages(packagesLocation);
+    var repository = new Repository();
+    return PackageUtilities.getPackages(repository);
   }
 };
