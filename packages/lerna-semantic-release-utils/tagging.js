@@ -10,10 +10,13 @@ module.exports = {
   },
 
   getTagParts: function getTagParts (tag) {
-    if (tag.indexOf('@') > -1) {
+    // we use lastIndex to skip leading "@" for namespaced packages
+    const indexOfNameVersionSeparator = tag.lastIndexOf('@');
+
+    if (indexOfNameVersionSeparator > -1) {
       return {
-        name: tag.split('@')[0],
-        version: tag.split('@')[1]
+        name: tag.substring(0, indexOfNameVersionSeparator),
+        version: tag.substring(indexOfNameVersionSeparator + 1)
       }
     }
 
