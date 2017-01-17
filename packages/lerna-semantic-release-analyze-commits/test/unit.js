@@ -26,6 +26,21 @@ describe('analyzing commits', function() {
       done();
     });
   });
+  it('still detects changes after revert', function (done) {
+    var commits = [
+      {"hash":"abcdef","message":"Revert \"fix(package): first line\"\n\nThis reverts commit 6fcf2d.\n"},
+      {"hash":"6fcf2d","message":"fix(package): first line\n\naffects: pkg-a, pkg-b, pkg-c\n"},
+    ];
+
+    analyzeCommits.analyze({
+      pkg: {name: 'pkg-b'},
+      commits: commits,
+    }, function(err, type) {
+      expect(err).to.equal(null);
+      expect(type).to.equal('patch');
+      done();
+    });
+  });
   describe('acts like semantic release', function () {
     var commits = [
       {"hash":"abcde4","message":"fix(package): first line\n\naffects: pkg-a\n"},
@@ -54,23 +69,6 @@ describe('analyzing commits', function() {
     });
     it('break = major', function(done) {
       expectType('pkg-d', 'major', done);
-    });
-  });
-  //TODO: I think this test *should* pass but it does not.
-  //See https://github.com/atlassian/lerna-semantic-release/issues/33
-  it.skip('still detects changes after revert', function (done) {
-    var commits = [
-      {"hash":"abcdef","message":"Revert \"fix(package): first line\"\n\nThis reverts commit 6fcf2d.\n"},
-      {"hash":"6fcf2d","message":"fix(package): first line\n\naffects: pkg-a, pkg-b, pkg-c\n"},
-    ];
-
-    analyzeCommits.analyze({
-      pkg: {name: 'pkg-b'},
-      commits: commits,
-    }, function(err, type) {
-      expect(err).to.equal(null);
-      expect(type).to.equal('patch');
-      done();
     });
   });
 });
