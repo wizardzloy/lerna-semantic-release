@@ -21,8 +21,8 @@ if [[ $TRAVIS_BRANCH == 'caribou' ]]; then
   npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN -q
   npm prune
 
-  git config --global user.email "jonelson+lerna-sr-travis-ci@atlassian.com"
-  git config --global user.name "Joshua Nelson"
+  git config --global user.email "jonelson+design-platform@atlassian.com"
+  git config --global user.name "Design Platform"
   git config --global push.default simple
 
   # git remote set-url origin "https://github.com/atlassian/lerna-semantic-release.git"
