@@ -15,6 +15,7 @@ if [[ $TRAVIS_BRANCH == 'caribou' ]]; then
   git clone https://github.com/$TRAVIS_REPO_SLUG.git $TRAVIS_REPO_SLUG
   git checkout $TRAVIS_BRANCH
 
+  rm ~/.git-credentials
   git config credential.helper store
   echo "https://${RELEASE_GH_USERNAME}:${RELEASE_GH_TOKEN}@github.com/atlassian/lerna-semantic-release.git" > ~/.git-credentials
 
