@@ -16,7 +16,7 @@ if [[ $TRAVIS_BRANCH == 'caribou' ]]; then
   git checkout $TRAVIS_BRANCH
 
   git config credential.helper store
-  echo "https://lerna-sr-travis-ci:${RELEASE_GH_TOKEN}@github.com/atlassian/lerna-semantic-release.git" > ~/.git-credentials
+  echo "https://${RELEASE_GH_USERNAME}:${RELEASE_GH_TOKEN}@github.com/atlassian/lerna-semantic-release.git" > ~/.git-credentials
 
   npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN -q
   npm prune
