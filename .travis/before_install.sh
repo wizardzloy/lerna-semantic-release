@@ -22,7 +22,7 @@ if [[ $TRAVIS_BRANCH == 'caribou' ]]; then
   npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN -q
   npm prune
 
-  git config --global user.email "designplatform9@gmail.com"
+  git config --global user.email "design-platform@atlassian.com"
   git config --global user.name "Design Platform"
   git config --global push.default simple
 
