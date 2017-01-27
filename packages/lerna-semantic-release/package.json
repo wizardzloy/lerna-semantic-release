@@ -14,9 +14,9 @@
     }
   },
   "dependencies": {
-    "lerna-semantic-release-pre": "^4.0.14",
-    "lerna-semantic-release-post": "^5.0.13",
-    "lerna-semantic-release-perform": "^4.0.13",
+    "lerna-semantic-release-pre": "^4.1.1",
+    "lerna-semantic-release-post": "^5.0.14",
+    "lerna-semantic-release-perform": "^4.0.14",
     "lerna-semantic-release-io": "^6.0.0"
   },
   "peerDependencies": {
