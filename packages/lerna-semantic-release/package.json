@@ -16,7 +16,7 @@
   "dependencies": {
     "lerna-semantic-release-pre": "^4.1.1",
     "lerna-semantic-release-post": "^5.0.14",
-    "lerna-semantic-release-perform": "^4.0.14",
+    "lerna-semantic-release-perform": "^4.0.15",
     "lerna-semantic-release-io": "^7.0.0"
   },
   "peerDependencies": {
