@@ -42,8 +42,7 @@ function publishPackage (relativePath, io, done) {
   }
 
   setupGitSymlink(rootPath, packagePath, io.shell);
-
-  io.npm.publish(relativePath)(function (err) {
+  io.npm.publish(relativePath, pkg)(function (err) {
     removeGitSymlink(packagePath, io.shell);
     done(err);
   });
