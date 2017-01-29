@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "lerna-semantic-release-utils": "^4.0.0",
-    "lerna-semantic-release-io": "^6.0.0",
+    "lerna-semantic-release-io": "^7.0.0",
     "lerna-semantic-release-analyze-commits": "^4.0.0",
     "async": "~2.0.1",
     "dateformat": "~1.0.0",
