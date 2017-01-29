@@ -42,13 +42,7 @@ function publishPackage (relativePath, io, done) {
   }
 
   setupGitSymlink(rootPath, packagePath, io.shell);
-
-  var scopedPublicPackage = false ;
-  if(pkg.name.charAt(0)=='@' && pkg.config ) {
-    if(pkg.config.access) scopedPublicPackage = (pkg.config.access=='public');
-  } 
-
-  io.npm.publish(relativePath, scopedPublicPackage)(function (err) {
+  io.npm.publish(relativePath, pkg)(function (err) {
     removeGitSymlink(packagePath, io.shell);
     done(err);
   });
