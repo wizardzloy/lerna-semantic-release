@@ -5,10 +5,10 @@ module.exports = {
     var isScopedPublicPackage = false ;
     if (pkg.name.charAt(0)=='@' && pkg.config ) {
       if (pkg.config.access) {
-        scopedPublicPackage = (pkg.config.access=='public');
+        isScopedPublicPackage = (pkg.config.access=='public');
       }
     }
-    return execAsTask('npm publish ' + (scopedPublicPackage ? '--access=public ' :'') + path);
+    return execAsTask('npm publish ' + (isScopedPublicPackage ? '--access=public ' :'') + path);
   },
   version: function version (v) {
     return execAsTask('npm version ' + v + ' --git-tag-version false');
