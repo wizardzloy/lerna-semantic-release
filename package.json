@@ -8,6 +8,9 @@
   "config": {
     "commitizen": {
       "path": "node_modules/cz-lerna-changelog/"
+    },
+    "validate-commit-msg": {
+      "helpMessage": "Commit message violates the rules defined for this project. Please, execute `npm run commit` to generate a correct commit message with `commitizen`"
     }
   },
   "engines": {
@@ -28,20 +31,24 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "commitizen": "^2.9.5",
     "cz-lerna-changelog": "1.1.0",
     "eslint": "^3.14.1",
     "husky": "^0.13.1",
     "lerna": "2.0.0-beta.34",
-    "lerna-semantic-release": "^9.0.1"
+    "lerna-semantic-release": "^9.0.1",
+    "validate-commit-msg": "^2.11.1"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/atlassian/lerna-semantic-release.git"
   },
   "scripts": {
+    "commit": "git-cz",
     "semantic-release": "lerna-semantic-release pre && lerna-semantic-release post && lerna-semantic-release perform",
     "postinstall": "lerna bootstrap",
     "precommit": "npm run lint",
+    "commitmsg": "validate-commit-msg",
     "prepush": "npm run lint && npm run test",
     "test": "lerna run test",
     "lint": "eslint packages"
