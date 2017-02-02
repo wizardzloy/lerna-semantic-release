@@ -1,7 +1,6 @@
 var async = require('async');
 var path = require('path');
 var npmconf = require('npmconf');
-var rc = require('rc');
 
 var srRegistry = require('semantic-release/src/lib/get-registry');
 

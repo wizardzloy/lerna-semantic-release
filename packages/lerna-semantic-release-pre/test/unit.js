@@ -1,13 +1,12 @@
 var io = require('lerna-semantic-release-io').mocks();
 var expect = require('expect.js');
-var path = require('path');
 var pre = require('../index');
 
 function isPatchReleaseCommit (commit, expectations) {
   const name = expectations.name;
   const releaseHash = expectations.releaseHash;
   const version = expectations.version;
-  
+
   var isPatchReleaseCommit = true;
   var commitParts = commit.split('\n\n');
 
