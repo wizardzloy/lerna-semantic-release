@@ -2,6 +2,7 @@
 
 var task = process.argv[2];
 var io = require('lerna-semantic-release-io').default;
+var log = require('lerna-semantic-release-utils').log;
 
 var tasks = {
   pre: require('lerna-semantic-release-pre'),
@@ -9,16 +10,16 @@ var tasks = {
   post: require('lerna-semantic-release-post')
 };
 
-function erorrHandler(err) {
-  console.error(err);
+function errorHandler(err) {
+  log.error(err);
   process.exit(+!!err);
 }
 
 try {
   tasks[task]({
     io: io,
-    callback: erorrHandler
+    callback: errorHandler
   });
 } catch(err) {
-  erorrHandler(err);
+  errorHandler(err);
 }

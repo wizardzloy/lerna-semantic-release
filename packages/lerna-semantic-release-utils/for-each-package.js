@@ -1,7 +1,4 @@
 var async = require('async');
-var path = require('path');
-
-var process = require('process');
 
 var log = require('./log');
 var bindTasks = require('./bind-tasks');

@@ -1,5 +1,5 @@
 if (typeof window !== 'undefined') {
-  module.exports = window.console;
+  module.exports = window.console;  // eslint-disable-line no-undef
 } else {
   var winston = require('winston');
   winston.cli();
@@ -9,4 +9,4 @@ if (typeof window !== 'undefined') {
     ]
   });
   module.exports = logger.cli();
-};
+}
