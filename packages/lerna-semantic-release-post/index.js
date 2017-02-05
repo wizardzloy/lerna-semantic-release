@@ -99,7 +99,6 @@ function isTagRelevant (packageName, tag) {
 }
 
 function replaceTags (oldTags, newTagFormatter, git, done) {
-
   async.series(oldTags.map(function renameTag (oldTag) {
     return function (done) {
       var tagParts = tagging.getTagParts(oldTag);
