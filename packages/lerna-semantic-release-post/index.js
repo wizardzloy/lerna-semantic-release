@@ -1,5 +1,4 @@
 var conventionalChangelog = require('conventional-changelog');
-var async = require('async');
 var fs = require('fs');
 var path = require('path');
 var dateFormat = require('dateformat');
@@ -26,22 +25,28 @@ function getPkg (packagePath) {
  * @returns commit the modified commit
  */
 function reformatCommit (commit) {
-  var rtag = /tag:\s*[v=]?(.+?)[,\)]/gi;
-
   if (commit.committerDate) {
     commit.committerDate = dateFormat(commit.committerDate, 'yyyy-mm-dd', true);
   }
-
-  if (commit.gitTags) {
-    var match = rtag.exec(commit.gitTags);
-    rtag.lastIndex = 0;
-
-    if (match) {
-      commit.version = match[1];
-    }
+  var isReleaseCommit = commit.type === 'chore' && commit.scope === 'release';
+  if (!isReleaseCommit) {
+    return commit;
   }
+  var affectedPackages = analyzer.getAffectedPackages(getAffectsLine(commit));
+  var hasVersion = affectedPackages[0] &&
+    tagging.getTagParts(affectedPackages[0]) &&
+    tagging.getTagParts(affectedPackages[0]).version;
 
+  if (!hasVersion) {
+    return commit;
+  }
+  var newVersion = tagging.getTagParts(affectedPackages[0]).version;
+  commit.version = newVersion;
   return commit;
+}
+
+function getAffectsLine (commit) {
+  return analyzer.findAffectsLine({message: commit.body});
 }
 
 function createChangelog (done) {
@@ -55,16 +60,15 @@ function createChangelog (done) {
     preset: 'angular',
     transform: function (commit, cb) {
       var pkgJsonFile = getPkg(packagePath);
+      var isRelevant = analyzer.isRelevant(getAffectsLine(commit), pkgJsonFile.name);
 
-      var isRelevant = analyzer.isRelevant(commit.body, pkgJsonFile.name);
-
-      if (!isRelevant && !commit.gitTags) {
-        cb(null, null);
+      if (isRelevant) {
+        commit = reformatCommit(commit);
+        cb(null, commit);
         return;
       }
 
-      commit = reformatCommit(commit);
-      cb(null, commit);
+      cb(null, null);
     },
     pkg: {
       path: pkgJsonPath
@@ -93,48 +97,10 @@ function createChangelog (done) {
   });
 }
 
-function isTagRelevant (packageName, tag) {
-  var tagParts = tagging.getTagParts(tag);
-  return tagParts && tagParts.version && tagParts.name === packageName;
-}
-
-function replaceTags (oldTags, newTagFormatter, git, done) {
-  async.series(oldTags.map(function renameTag (oldTag) {
-    return function (done) {
-      var tagParts = tagging.getTagParts(oldTag);
-      git.tag(newTagFormatter(tagParts.name, tagParts.version) + ' ' + oldTag, 'temporary tag')(done);
-    };
-  }), function seriesComplete (errListTag) {
-    git.tagDelete(oldTags)(function (errDeleteTag) {
-      done(errListTag || errDeleteTag);
-    });
-  });
-}
-
-function createSemverTags (done) {
-  var git = this.io.git;
-  var packageName = getPkg(this.packagePath).name;
-  git.tagList()(function (err, tags) {
-    var relevantLernaTags = tags.all.filter(isTagRelevant.bind(this, packageName));
-    replaceTags(relevantLernaTags, tagging.semver, git, done);
-  });
-}
-
-function removeSemverTags (done) {
-  var git = this.io.git;
-  var packageName = getPkg(this.packagePath).name;
-  git.tagList()(function (err, tags) {
-    var relevantSemverTags = tags.all.filter(isTagRelevant.bind(this, packageName));
-    replaceTags(relevantSemverTags, tagging.lerna, git, done);
-  })
-}
-
 module.exports = function (config) {
   var rootPackageRepository = JSON.parse(fs.readFileSync('./package.json')).repository;
   forEachPackage([
-    createSemverTags,
     createChangelog,
-    removeSemverTags
   ], {
     allPackages: config.io.lerna.getAllPackages(),
     extraContext: {
