@@ -109,7 +109,7 @@ module.exports = function (config) {
     }
   }, (err) => {
     if (typeof config.callback === 'function') {
-      err && config.callback(err);
+      config.callback(err);
     }
   });
 };

@@ -1,5 +1,4 @@
 var io = require('lerna-semantic-release-io').mocks();
-var realIo = require('lerna-semantic-release-io').default;
 var expect = require('expect.js');
 var path = require('path');
 var post = require('../index');
@@ -31,31 +30,21 @@ function makeBasicState () {
     'packages': {
       'a': {
         'index.js': 'Published',
-        'package.json': JSON.stringify({name: 'a', version: '0.0.2'})
+        'package.json': JSON.stringify({name: 'a', version: '0.0.2', repository: { type: 'git', url: 'http://follow.me' }})
       },
       'b': {
         'index.js': 'Published',
-        'package.json': JSON.stringify({name: 'b', version: '0.0.1'})
+        'package.json':JSON.stringify({name: 'b', version: '0.0.1', repository: { type: 'git', url: 'http://follow.me' }})
       },
-      'c': {
-        'index.js': 'Unmodified',
-        'package.json': JSON.stringify({name: 'c', version: '0.0.0'})
-      },
-      'd': {
-        'index.js': 'Published',
-        'package.json': JSON.stringify({name: 'd', version: '0.0.2', repository: { type: 'git', url: 'http://follow.me' }})
-      }
     },
     'package.json': JSON.stringify({name: 'main', version: '0.0.0'}),
-    'lerna.json': JSON.stringify({lerna: '2.0.0-beta.17', version: 'independent'})
+    'lerna.json': JSON.stringify({lerna: '2.0.0-beta.34', version: 'independent'})
   };
 
   var packageVersions = {
     versions: {
       'a': '0.0.2',
       'b': '0.0.1',
-      'c': '0.0.0',
-      'd': '0.0.1',
     },
     latestVersions: {
       'a': {
@@ -65,14 +54,6 @@ function makeBasicState () {
       'b': {
         version: '0.0.1',
         gitHead: '2FIXAB'
-      },
-      'c': {
-        version: '0.0.0',
-        gitHead: 'FIRST'
-      },
-      'd': {
-        version: '0.0.1',
-        gitHead: 'FIRST'
       }
     }
   };
@@ -80,31 +61,37 @@ function makeBasicState () {
   return {
     fs: mockNodeModules(fsState),
     git: {
-      allTags: [
-        {tag: 'a@0.0.0', hash: 'FIRST'},
-        {tag: 'a@0.0.1', hash: 'FIRST'},
-        {tag: 'a@0.0.2', hash: '3FIXA'},
-        {tag: 'b@0.0.0', hash: 'FIRST'},
-        {tag: 'b@0.0.1', hash: '2FIXAB'},
-        {tag: 'c@0.0.0', hash: 'FIRST'},
-        {tag: 'd@0.0.0', hash: 'FIRST'},
-        {tag: 'd@0.0.1', hash: 'FIRST'},
-        {tag: 'd@0.0.2', hash: 'FIRST'}
-      ],
-      head: '3FIXA',
-      // Git tags are set up here for A's changelog, these would be modified at run time by git tag
+      head: 'RELEASE4',
       log: [
+        {
+          message: 'chore(release): release component\n\naffects: a@0.0.2',
+          hash: 'RELEASE4',
+          date: '2015-08-22 12:01:42 +0200',
+        },
         {
           message: 'fix: a\n\naffects: a',
           hash: '3FIXA',
           date: '2015-08-22 12:01:42 +0200',
-          tags: '0.0.2'
+        },
+        {
+          message: 'chore(release): release component\n\naffects: a@0.0.1',
+          hash: 'RELEASE3',
+          date: '2015-08-22 12:01:42 +0200',
+        },
+        {
+          message: 'chore(release): release component\n\naffects: b@0.0.1',
+          hash: 'RELEASE2',
+          date: '2015-08-22 12:01:42 +0200',
         },
         {
           message: 'fix: a b\n\naffects: a, b',
           hash: '2FIXAB',
           date: '2015-08-22 12:01:42 +0200',
-          tags: '0.0.1'
+        },
+        {
+          message: 'chore(release): release component\n\naffects: b@0.0.0',
+          hash: 'RELEASE1',
+          date: '2015-08-22 12:01:42 +0200',
         },
         {
           message: 'fix: b\n\naffects: b',
@@ -115,7 +102,6 @@ function makeBasicState () {
           message: 'chore: the first commit',
           hash: 'FIRST',
           date: '2015-08-22 12:01:42 +0200',
-          tags: '0.0.0'
         }
       ]
     },
@@ -125,7 +111,7 @@ function makeBasicState () {
 }
 
 describe('post', function() {
-  describe('with four packages', function() {
+  describe('with two packages', function() {
     beforeEach(function () {
       io.mock(makeBasicState());
     });
@@ -146,68 +132,32 @@ describe('post', function() {
         expect(io.npm.publish.innerTask.callCount).to.equal(0);
       });
 
+      it('git push is not called', function () {
+        expect(io.git.push.innerTask.callCount).to.equal(0);
+      });
+
+      it('git push --tags is not called', function () {
+        expect(io.git.pushTags.innerTask.callCount).to.equal(0);
+      });
+
       function countOccurrences (s, regex) {
         return (s.match(regex) || []).length;
       }
 
       it('changelog contains correct content for package A', function () {
         var changeLog = fs.readFileSync('./packages/a/CHANGELOG.md').toString();
-        expect(countOccurrences(changeLog, /<a name=/g)).to.equal(4);
+        expect(countOccurrences(changeLog, /<a name=/g)).to.equal(3);
         expect(countOccurrences(changeLog, /\* fix:/g)).to.equal(2);
         expect(countOccurrences(changeLog, /## 0.0.2/g)).to.equal(2);
         expect(countOccurrences(changeLog, /## 0.0.1/g)).to.equal(1);
-        expect(countOccurrences(changeLog, /# 0.0.0/g)).to.equal(1);
         expect(countOccurrences(changeLog, /\* fix: b/g)).to.equal(0);
       });
 
-      it('changelog contains correct URL package D', function () {
-        var changeLog = fs.readFileSync('./packages/d/CHANGELOG.md').toString();
-
+      it('changelog contains correct URL for package A', function () {
+        var changeLog = fs.readFileSync('./packages/a/CHANGELOG.md').toString();
         expect(countOccurrences(changeLog, /\[3FIXA\]\(http:\/\/follow.me\/commits\/3FIXA\)/g)).to.equal(1);
         expect(countOccurrences(changeLog, /\[2FIXAB\]\(http:\/\/follow.me\/commits\/2FIXAB\)/g)).to.equal(1);
-        expect(countOccurrences(changeLog, /\[FIRST\]\(http:\/\/follow.me\/commits\/FIRST\)/g)).to.equal(1);
-      });
-
-      it('git push --tags is not called', function () {
-        expect(io.git.pushTags.innerTask.callCount).to.equal(0);
       });
     });
   });
-
-  describe('with a real rogue tag in the repo', function () {
-    const rogueTagName = '0.0.1-semver-tag-that-does-not-follow-conventions';
-    beforeEach(function (done) {
-      /**
-       *  A dependency of conventional changelog, `git-semver-tags` queries the `git log` *in the repo*
-       *  directly. We cannot mock it. For that reason, we need to tag in the actual repo in this test
-       */
-      realIo.git.tag(rogueTagName)(done);
-    });
-
-    afterEach(function (done) {
-      realIo.git.tagDelete([rogueTagName])(done);
-    });
-
-    describe('with a commit that does follow our conventions', function () {
-      beforeEach(function () {
-        var state = makeBasicState();
-        state.git.allTags.push({
-          tag: '0.0.1-semver-tag-for-rogue',
-          hash: 'ROGUE',
-        });
-        state.git.log.push({
-          message: 'chore(rogue): chore for rogue\n\naffects: rogue',
-          hash: 'ROGUE',
-          date: '2015-08-22 12:01:42 +0200',
-          tags: '0.0.1-semver-tag-for-rogue'
-        });
-        io.mock(state);
-      });
-
-      afterEach(function () {
-        io.restore();
-      });
-    });
-  });
-
 });
