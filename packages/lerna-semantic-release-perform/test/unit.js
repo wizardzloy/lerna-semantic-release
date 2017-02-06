@@ -105,13 +105,13 @@ describe('perform', function() {
         expect(fileContents[0]).to.equal('a@0.0.1');
         expect(fileContents[1]).to.equal('b@0.0.1');
       });
-
+      
       it('pushes commits', function () {
-        expect(io.git.push.called).to.equal(true);
+        expect(io.git.push.innerTask.called).to.equal(true);
       });
 
       it('pushes tags', function () {
-        expect(io.git.pushTags.called).to.equal(true);
+        expect(io.git.pushTags.innerTask.called).to.equal(true);
       });
     });
   });
