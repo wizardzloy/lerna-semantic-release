@@ -96,3 +96,62 @@ describe('findAffectsLine: ', function () {
     expect(analyzeCommits.findAffectsLine(commit)).to.equal(undefined);
   });
 });
+
+describe('getting affected packages:', function () {
+  it('returns nothing when no pacakges were affected', function () {
+    expect(analyzeCommits.getAffectedPackages(null)).to.be.empty();
+    expect(analyzeCommits.getAffectedPackages(undefined)).to.be.empty();
+    expect(analyzeCommits.getAffectedPackages('')).to.be.empty();
+  });
+  it('gets one package', function () {
+    expect(analyzeCommits.getAffectedPackages('affects: 1')).to.eql(['1']);
+  });
+  it('gets two packages', function () {
+    expect(analyzeCommits.getAffectedPackages('affects: 1, 2')).to.eql(['1', '2']);
+  });
+  it('gets two packages with scopes', function () {
+    expect(analyzeCommits.getAffectedPackages('affects: @foo/1, @foo/2')).to.eql(['@foo/1', '@foo/2']);
+  });
+  it('gets no packages when no packages present', function () {
+    expect(analyzeCommits.getAffectedPackages('affects: ')).to.eql([]);
+  });
+  it('gets one package when only a comma is present', function () {
+    expect(analyzeCommits.getAffectedPackages('affects: , ')).to.eql([',']);
+  });
+})
+
+describe('detecting relevance: ', function () {
+  it('detects relevance with two packages', function () {
+    expect(analyzeCommits.isRelevant('affects: package1, package2', 'package1')).to.equal(true);
+  });
+  it('detects relevance with one package', function () {
+    expect(analyzeCommits.isRelevant('affects: package1', 'package1')).to.equal(true);
+  });
+  it('detects irrelevance with one package', function () {
+    expect(analyzeCommits.isRelevant('affects: package1', 'foo')).to.equal(false);
+  });
+  it('detects irrelevance with two packages', function () {
+    expect(analyzeCommits.isRelevant('affects: package1, package2', 'foo')).to.equal(false);
+  });
+  it('detects relevance with one versioned package', function () {
+    expect(analyzeCommits.isRelevant('affects: package1@foo', 'package1')).to.equal(true);
+  });
+  it('detects relevance with two versioned packages', function () {
+    expect(analyzeCommits.isRelevant('affects: package1@1.2.3, package2@3.4.5', 'package1')).to.equal(true);
+  });
+  it('detects irrelevance with two versioned packages', function () {
+    expect(analyzeCommits.isRelevant('affects: package1@1.2.3, package2@3.4.5', 'package1')).to.equal(true);
+  });
+  it('detects relevance with scoped packages', function () {
+    expect(analyzeCommits.isRelevant('affects: @package1, @package2, @package3', '@package3')).to.equal(true);
+  });
+  it('detects irrelevance with scoped packages', function () {
+    expect(analyzeCommits.isRelevant('affects: @package1, @package2, @package3', '@@@@')).to.equal(false);
+  });
+  it('detects relevance with scoped, versioned packages', function () {
+    expect(analyzeCommits.isRelevant('affects: @package1@1.1.1', '@package1')).to.equal(true);
+  });
+  it('detects irrelevance with scoped, versioned packages', function () {
+    expect(analyzeCommits.isRelevant('affects: @package1@1.1.1', '@package2')).to.equal(false);
+  });
+});

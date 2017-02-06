@@ -20,8 +20,23 @@ module.exports = {
     });
   },
   isRelevant: function (affectsLine, packageName) {
-    return affectsLine && affectsLine.indexOf(affectsDelimiter) === 0 &&
-      affectsLine.split(affectsDelimiter)[1].trim().split(', ').indexOf(packageName) > -1;
+    var affectedPackages = module.exports.getAffectedPackages(affectsLine);
+    return (affectedPackages.some(function (thisPackage) {
+      if (thisPackage.indexOf('@') === -1 || thisPackage.lastIndexOf('@') === 0) {
+        return thisPackage === packageName;
+      }
+      return thisPackage.substring(0, thisPackage.lastIndexOf('@')) === packageName;
+    }));
+  },
+  getAffectedPackages: function (affectsLine) {
+    if (!affectsLine || affectsLine.indexOf(affectsDelimiter) !== 0) {
+      return [];
+    }
+    var trimmedPackages = affectsLine.split(affectsDelimiter)[1].trim();
+    if (trimmedPackages.length === 0) {
+      return [];
+    }
+    return trimmedPackages.split(', ');
   },
   findAffectsLine: function (commit) {
     var message = (commit && commit.message) ? commit.message : '';
