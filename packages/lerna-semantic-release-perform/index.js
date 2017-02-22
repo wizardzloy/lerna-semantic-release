@@ -145,6 +145,7 @@ module.exports = function perform (config) {
   function (err) {
     if (err) {
       log.error(err.message);
+      process.exit(1);
     }
     if (typeof config.callback === 'function') {
       config.callback(err);
